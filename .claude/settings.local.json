@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /Users/himaschal/workspace/school-fee-planner/src/*.jsx /Users/himaschal/workspace/school-fee-planner/src/**/*.jsx /Users/himaschal/workspace/school-fee-planner/src/**/*.js)",
+      "Bash(npm install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm test:*)",
+      "Bash(npm show:*)",
+      "Bash(npm audit:*)"
+    ]
+  }
+}
