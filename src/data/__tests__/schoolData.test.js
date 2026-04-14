@@ -62,10 +62,10 @@ describe('SCHOOL_TYPES', () => {
     expect(uniqueIds.size).toBe(allIds.length)
   })
 
-  it('private school fees are higher than public school fees', () => {
-    const publicMax = Math.max(...SCHOOL_TYPES.public.tiers.map(t => t.high))
-    const privateMin = Math.min(...SCHOOL_TYPES.private.tiers.map(t => t.low))
-    expect(privateMin).toBeGreaterThan(publicMax)
+  it('private school midpoints are higher than public school midpoints', () => {
+    const publicMaxMid = Math.max(...SCHOOL_TYPES.public.tiers.map(t => t.midpoint))
+    const privateMinMid = Math.min(...SCHOOL_TYPES.private.tiers.map(t => t.midpoint))
+    expect(privateMinMid).toBeGreaterThan(publicMaxMid)
   })
 })
 

@@ -1,6 +1,7 @@
 // South African school fee tiers (annual, in Rands)
-// Based on publicly available ranges as of 2024-2025
-// All figures are estimates for planning purposes only
+// Based on publicly available ranges as of 2025
+// Sources: BusinessTech, Jacaranda FM, Education South Africa, school websites
+// All figures are estimates for planning purposes only — verify directly with schools
 
 export const SCHOOL_TYPES = {
   public: {
@@ -9,8 +10,8 @@ export const SCHOOL_TYPES = {
     color: '#2D6A4F',
     tiers: [
       { id: 'public_low', label: 'No-fee / Low-fee', low: 0, high: 3000, midpoint: 1500, description: 'No-fee schools or very low levy' },
-      { id: 'public_mid', label: 'Mid-range public', low: 3000, high: 12000, midpoint: 7000, description: 'Typical suburban public school' },
-      { id: 'public_high', label: 'Upper public', low: 12000, high: 30000, midpoint: 20000, description: 'Top public schools, high levies' },
+      { id: 'public_mid', label: 'Mid-range public', low: 3000, high: 30000, midpoint: 15000, description: 'Typical suburban public school' },
+      { id: 'public_high', label: 'Top public (e.g. PBS, KES)', low: 30000, high: 75000, midpoint: 52000, description: 'Top-ranked Quintile 5 schools — R70k+ in 2025' },
     ],
   },
   semi_private: {
@@ -18,9 +19,9 @@ export const SCHOOL_TYPES = {
     description: 'Registered independent school, mid-range fees',
     color: '#1B4965',
     tiers: [
-      { id: 'indep_low', label: 'Lower independent', low: 30000, high: 55000, midpoint: 42000, description: 'Affordable independent school' },
-      { id: 'indep_mid', label: 'Mid independent', low: 55000, high: 90000, midpoint: 72000, description: 'Established independent school' },
-      { id: 'indep_high', label: 'Upper independent', low: 90000, high: 140000, midpoint: 115000, description: 'Premium independent school' },
+      { id: 'indep_low', label: 'Lower independent (e.g. SPARK)', low: 30000, high: 60000, midpoint: 45000, description: 'Affordable independent school' },
+      { id: 'indep_mid', label: 'Mid independent (e.g. Curro, Crawford)', low: 60000, high: 120000, midpoint: 85000, description: 'Established independent school' },
+      { id: 'indep_high', label: 'Upper independent (e.g. Reddam)', low: 120000, high: 170000, midpoint: 145000, description: 'Premium independent school' },
     ],
   },
   private: {
@@ -28,9 +29,9 @@ export const SCHOOL_TYPES = {
     description: 'Full private, often IEB or international curriculum',
     color: '#7B2D8B',
     tiers: [
-      { id: 'private_low', label: 'Lower private', low: 100000, high: 160000, midpoint: 130000, description: 'Entry-level private school' },
-      { id: 'private_mid', label: 'Mid private', low: 160000, high: 240000, midpoint: 200000, description: 'Established private school' },
-      { id: 'private_premium', label: 'Premium private', low: 240000, high: 380000, midpoint: 310000, description: 'Top-tier / international school' },
+      { id: 'private_low', label: 'Lower private', low: 150000, high: 220000, midpoint: 180000, description: 'Entry-level private / IEB school' },
+      { id: 'private_mid', label: 'Mid private (e.g. St John\'s, Bishops day)', low: 220000, high: 300000, midpoint: 260000, description: 'Established private school — day fees' },
+      { id: 'private_premium', label: 'Premium private (e.g. Michaelhouse, Hilton)', low: 300000, high: 430000, midpoint: 360000, description: 'Top-tier / boarding / international school — R390k–R420k in 2025' },
     ],
   },
 }
