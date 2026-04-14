@@ -1,6 +1,7 @@
 import { formatRand } from '../utils/calculations'
 import { generatePDF } from '../utils/pdfExport'
 import { SCHOOL_TYPES } from '../data/schoolData'
+import { trackPDFDownload, trackShare } from '../utils/analytics'
 
 export default function ResultsPanel({ result, inputs }) {
   if (!result) {
@@ -37,6 +38,7 @@ export default function ResultsPanel({ result, inputs }) {
         yearsToMatric: inputs.yearsToMatric,
       },
     })
+    trackPDFDownload({ schoolType: inputs.schoolType, totalCost: result.totalCost })
   }
 
   return (
@@ -102,6 +104,7 @@ export default function ResultsPanel({ result, inputs }) {
               const url = window.location.href
               navigator.clipboard?.writeText(url).catch(() => {})
               alert('Link copied! Share this page with your partner or family.')
+              trackShare()
             }}
           >
             Share this estimate

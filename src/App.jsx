@@ -6,6 +6,7 @@ import ProjectionTable from './components/ProjectionTable'
 import FAQ from './components/FAQ'
 import { SCHOOL_TYPES, GRADE_FROM_AGE, DEFAULT_VALUES } from './data/schoolData'
 import { calculateScenario } from './utils/calculations'
+import { trackCalculate } from './utils/analytics'
 import './index.css'
 
 function formatRandSimple(v) {
@@ -65,6 +66,11 @@ export default function App() {
       yearsToMatric: inputs.yearsToMatric,
     })
     setResult(r)
+    trackCalculate({
+      schoolType: inputs.schoolType,
+      tierId: inputs.tierId,
+      yearsToMatric: inputs.yearsToMatric,
+    })
   }, [inputs])
 
   const scrollToCalc = () => {

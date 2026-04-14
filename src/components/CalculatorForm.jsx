@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SCHOOL_TYPES, DEFAULT_VALUES } from '../data/schoolData'
 import { formatRand } from '../utils/calculations'
+import { trackSchoolTypeChange } from '../utils/analytics'
 
 function RangeInput({ min, max, step = 1, value, onChange, prefix = '', suffix = '' }) {
   const pct = ((value - min) / (max - min)) * 100
@@ -33,6 +34,7 @@ export default function CalculatorForm({ inputs, onChange }) {
       useCustomFee: false,
     })
     setShowCustomFee(false)
+    trackSchoolTypeChange(type)
   }
 
   const handleTier = (tier) => {

@@ -10,7 +10,10 @@
       "Bash(npm run:*)",
       "Bash(gh repo:*)",
       "WebSearch",
-      "Bash(node scripts/generate-og-image.js)"
+      "Bash(node scripts/generate-og-image.js)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)"
     ]
   }
 }
