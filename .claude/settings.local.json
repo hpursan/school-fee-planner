@@ -6,7 +6,8 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(npm test:*)",
       "Bash(npm show:*)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
