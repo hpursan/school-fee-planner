@@ -2,6 +2,7 @@ import { formatRand } from '../utils/calculations'
 import { generatePDF } from '../utils/pdfExport'
 import { SCHOOL_TYPES } from '../data/schoolData'
 import { trackPDFDownload, trackShare } from '../utils/analytics'
+import AdvisorCTA from './AdvisorCTA'
 
 export default function ResultsPanel({ result, inputs }) {
   if (!result) {
@@ -83,6 +84,12 @@ export default function ResultsPanel({ result, inputs }) {
               : `At your current saving rate, you're projected to be ahead by ${formatRand(Math.abs(result.fundingGap))}.`}
           </div>
         </div>
+
+        <AdvisorCTA
+          isShortfall={isShortfall}
+          fundingGap={result.fundingGap}
+          requiredMonthly={result.requiredMonthly}
+        />
 
         <div className="monthly-target">
           <div className="monthly-target-label">Monthly savings target</div>

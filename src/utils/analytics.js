@@ -9,7 +9,7 @@
  *   trackEvent('pdf_download', { school_type: 'private' })
  */
 
-function trackEvent(name, props = {}) {
+export function trackEvent(name, props = {}) {
   try {
     // Cloudflare Web Analytics custom event API
     window.__cfBeaconF = window.__cfBeaconF || []

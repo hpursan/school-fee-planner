@@ -503,6 +503,56 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 600; }
 .gap-banner.surplus .gap-banner-title { color: var(--sage-light); }
 .gap-banner-sub { font-size: 0.82rem; color: rgba(255,255,255,0.65); }
 
+/* ── Advisor CTA ─────────────────────────────────────────────────────── */
+.advisor-cta {
+  margin: 16px 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(27,73,101,0.6), rgba(27,73,101,0.3));
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.advisor-cta-inner {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+}
+.advisor-cta-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.advisor-cta-content { flex: 1; }
+.advisor-cta-heading {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.advisor-cta-body {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.advisor-cta-btn {
+  display: inline-block;
+  background: var(--amber);
+  color: var(--navy-dark);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.advisor-cta-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.advisor-cta-disclaimer {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.35);
+}
+
 .monthly-target {
   background: linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.08));
   border: 1.5px solid rgba(212,160,23,0.4);
