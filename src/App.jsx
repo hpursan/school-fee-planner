@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import CalculatorForm from './components/CalculatorForm'
 import ResultsPanel from './components/ResultsPanel'
 import { FeeGrowthChart, FundVsCostChart } from './components/Charts'
@@ -6,7 +6,8 @@ import ProjectionTable from './components/ProjectionTable'
 import FAQ from './components/FAQ'
 import { SCHOOL_TYPES, GRADE_FROM_AGE, DEFAULT_VALUES } from './data/schoolData'
 import { calculateScenario } from './utils/calculations'
-import { trackCalculate } from './utils/analytics'
+import { generatePDF } from './utils/pdfExport'
+import { trackCalculate, trackPDFDownload, trackEvent } from './utils/analytics'
 import './index.css'
 
 function formatRandSimple(v) {
@@ -23,15 +24,104 @@ export default function App() {
   const calcRef = useRef(null)
 
   const [inputs, setInputs] = useState(() => {
-    const { grade, yearsToMatric } = GRADE_FROM_AGE(DEFAULT_VALUES.childAge)
-    return {
-      ...DEFAULT_VALUES,
-      gradeLabel: grade,
-      yearsToMatric,
+    // Restore inputs if returning from a PayFast payment redirect
+    const saved = sessionStorage.getItem('sfp_inputs')
+    if (saved) {
+      try { return JSON.parse(saved) } catch { /* ignore */ }
     }
+    const { grade, yearsToMatric } = GRADE_FROM_AGE(DEFAULT_VALUES.childAge)
+    return { ...DEFAULT_VALUES, gradeLabel: grade, yearsToMatric }
   })
 
-  const [result, setResult] = useState(null)
+  const [result, setResult]               = useState(null)
+  const [paymentStatus, setPaymentStatus] = useState(null) // null | 'verifying' | 'success' | 'cancelled' | 'failed'
+
+  // ── Handle return from PayFast ───────────────────────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const payment = params.get('payment')
+    const ref     = params.get('ref') ?? sessionStorage.getItem('sfp_payment_ref')
+
+    if (!payment) return
+
+    // Clean URL without reloading
+    window.history.replaceState({}, '', window.location.pathname)
+
+    if (payment === 'cancelled') {
+      setPaymentStatus('cancelled')
+      setTimeout(() => setPaymentStatus(null), 4000)
+      return
+    }
+
+    if (payment === 'success' && ref) {
+      setPaymentStatus('verifying')
+      verifyAndDownload(ref)
+    }
+  }, [])
+
+  const verifyAndDownload = useCallback(async (ref) => {
+    const MAX_ATTEMPTS = 6
+    const DELAY_MS     = 2000
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const res  = await fetch(`/api/verify-payment?ref=${ref}`)
+        const data = await res.json()
+
+        if (data.verified) {
+          setPaymentStatus('success')
+          sessionStorage.removeItem('sfp_payment_ref')
+          sessionStorage.removeItem('sfp_inputs')
+
+          // Scroll to calculator and trigger PDF download
+          calcRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+          // Small delay to let the scroll settle before PDF generates
+          setTimeout(() => {
+            triggerPDFDownload()
+            trackEvent('payment_completed', { ref })
+            trackPDFDownload({ schoolType: inputs.schoolType, totalCost: result?.totalCost ?? 0 })
+          }, 800)
+
+          setTimeout(() => setPaymentStatus(null), 6000)
+          return
+        }
+      } catch { /* network error — retry */ }
+
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise(r => setTimeout(r, DELAY_MS))
+      }
+    }
+
+    // All attempts exhausted
+    setPaymentStatus('failed')
+    setTimeout(() => setPaymentStatus(null), 6000)
+  }, [inputs, result])
+
+  const triggerPDFDownload = useCallback(() => {
+    if (!result) return
+    const schoolTypeLabel = SCHOOL_TYPES[inputs.schoolType]?.label ?? ''
+    const tierLabel       = SCHOOL_TYPES[inputs.schoolType]?.tiers.find(t => t.id === inputs.tierId)?.label ?? ''
+    const tier            = SCHOOL_TYPES[inputs.schoolType]?.tiers.find(t => t.id === inputs.tierId)
+    const currentFee      = inputs.useCustomFee ? inputs.customFee : (tier?.midpoint ?? 0)
+
+    generatePDF({
+      scenario: {},
+      result,
+      inputs: {
+        childAge: inputs.childAge,
+        gradeLabel: inputs.gradeLabel,
+        schoolTypeLabel,
+        tierLabel,
+        currentFee,
+        feeInflation: inputs.feeInflation,
+        investmentReturn: inputs.investmentReturn,
+        currentSavings: inputs.currentSavings,
+        monthlyContribution: inputs.monthlyContribution,
+        yearsToMatric: inputs.yearsToMatric,
+      },
+    })
+  }, [inputs, result])
 
   const handleChange = (patch) => {
     setInputs(prev => {
@@ -163,6 +253,16 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* ── Payment status banner ── */}
+      {paymentStatus && (
+        <div className={`payment-banner payment-banner--${paymentStatus}`}>
+          {paymentStatus === 'verifying' && '⏳ Verifying your payment — your PDF will download automatically…'}
+          {paymentStatus === 'success'   && '✅ Payment confirmed! Your PDF is downloading now.'}
+          {paymentStatus === 'cancelled' && '↩ Payment cancelled — no charge was made.'}
+          {paymentStatus === 'failed'    && '⚠ Could not verify payment. Please contact support@ashlunar.dev'}
+        </div>
+      )}
 
       {/* ── Calculator ── */}
       <section className="section" id="calculator" ref={calcRef}>

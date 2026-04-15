@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import { formatRand } from '../utils/calculations'
-import { generatePDF } from '../utils/pdfExport'
 import { SCHOOL_TYPES } from '../data/schoolData'
-import { trackPDFDownload, trackShare } from '../utils/analytics'
+import { trackShare } from '../utils/analytics'
 import AdvisorCTA from './AdvisorCTA'
+import PaymentModal from './PaymentModal'
 
 export default function ResultsPanel({ result, inputs }) {
+  const [modalOpen, setModalOpen] = useState(false)
+
   if (!result) {
     return (
       <div className="results-card">
@@ -15,36 +18,15 @@ export default function ResultsPanel({ result, inputs }) {
     )
   }
 
-  const isShortfall = result.fundingGap > 0
+  const isShortfall     = result.fundingGap > 0
   const schoolTypeLabel = SCHOOL_TYPES[inputs.schoolType]?.label ?? ''
-  const tierLabel = SCHOOL_TYPES[inputs.schoolType]?.tiers.find(t => t.id === inputs.tierId)?.label ?? ''
-  const currentFee = inputs.useCustomFee
-    ? inputs.customFee
-    : (SCHOOL_TYPES[inputs.schoolType]?.tiers.find(t => t.id === inputs.tierId)?.midpoint ?? 0)
-
-  const handleDownloadPDF = () => {
-    generatePDF({
-      scenario: {},
-      result,
-      inputs: {
-        childAge: inputs.childAge,
-        gradeLabel: inputs.gradeLabel,
-        schoolTypeLabel,
-        tierLabel,
-        currentFee,
-        feeInflation: inputs.feeInflation,
-        investmentReturn: inputs.investmentReturn,
-        currentSavings: inputs.currentSavings,
-        monthlyContribution: inputs.monthlyContribution,
-        yearsToMatric: inputs.yearsToMatric,
-      },
-    })
-    trackPDFDownload({ schoolType: inputs.schoolType, totalCost: result.totalCost })
-  }
+  const tierLabel       = SCHOOL_TYPES[inputs.schoolType]?.tiers.find(t => t.id === inputs.tierId)?.label ?? ''
 
   return (
     <div className="results-panel animate-in">
       <div className="results-card">
+
+        {/* ── Total cost header ── */}
         <div className="results-card-header">
           <div className="results-card-eyebrow">Estimated total cost to matric</div>
           <div className="results-card-total">{formatRand(result.totalCost)}</div>
@@ -53,6 +35,7 @@ export default function ResultsPanel({ result, inputs }) {
           </div>
         </div>
 
+        {/* ── Metrics grid ── */}
         <div className="results-grid">
           <div className="results-metric">
             <div className="results-metric-label">Next year's fee</div>
@@ -72,6 +55,7 @@ export default function ResultsPanel({ result, inputs }) {
           </div>
         </div>
 
+        {/* ── Shortfall / surplus banner ── */}
         <div className={`gap-banner ${isShortfall ? 'shortfall' : 'surplus'}`}>
           <div className="gap-banner-title">
             {isShortfall
@@ -85,12 +69,15 @@ export default function ResultsPanel({ result, inputs }) {
           </div>
         </div>
 
+        {/* ── PDF upsell CTA ── */}
         <AdvisorCTA
           isShortfall={isShortfall}
           fundingGap={result.fundingGap}
           requiredMonthly={result.requiredMonthly}
+          onBuyPDF={() => setModalOpen(true)}
         />
 
+        {/* ── Monthly target ── */}
         <div className="monthly-target">
           <div className="monthly-target-label">Monthly savings target</div>
           <div className="monthly-target-amount">{formatRand(result.requiredMonthly)}</div>
@@ -101,15 +88,15 @@ export default function ResultsPanel({ result, inputs }) {
           </div>
         </div>
 
+        {/* ── Actions ── */}
         <div className="results-actions">
-          <button className="btn-download-primary" onClick={handleDownloadPDF}>
-            ↓ Download PDF Report
+          <button className="btn-download-primary" onClick={() => setModalOpen(true)}>
+            ↓ Download PDF Report — R69
           </button>
           <button
             className="btn-download"
             onClick={() => {
-              const url = window.location.href
-              navigator.clipboard?.writeText(url).catch(() => {})
+              navigator.clipboard?.writeText(window.location.href).catch(() => {})
               alert('Link copied! Share this page with your partner or family.')
               trackShare()
             }}
@@ -118,6 +105,13 @@ export default function ResultsPanel({ result, inputs }) {
           </button>
         </div>
       </div>
+
+      {/* ── Payment modal ── */}
+      <PaymentModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        inputs={inputs}
+      />
     </div>
   )
 }

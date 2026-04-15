@@ -1,0 +1,15 @@
+name                  = "school-fee-planner"
+pages_build_output_dir = "dist"
+
+# KV namespace for storing verified payment references.
+# Setup steps:
+#   1. Cloudflare Dashboard → Workers & Pages → KV → Create namespace
+#      Name it "school-fee-planner-payments"
+#   2. Copy the Namespace ID and replace the placeholder below
+#   3. In Cloudflare Pages → school-fee-planner → Settings → Functions
+#      → KV namespace bindings → Add: Variable = PAYMENT_STORE, KV = school-fee-planner-payments
+
+[[kv_namespaces]]
+binding    = "PAYMENT_STORE"
+id         = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_NAMESPACE_ID"

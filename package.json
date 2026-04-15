@@ -13,6 +13,7 @@
     "generate:og": "node scripts/generate-og-image.js"
   },
   "dependencies": {
+    "blueimp-md5": "^2.19.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "react": "^18.3.1",
